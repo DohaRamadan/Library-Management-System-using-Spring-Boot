@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 
 public class BookIsNotBorrowedByPatron extends ApplicationException {
     public BookIsNotBorrowedByPatron() {
-        super(HTTPStatusCodesEnum.CONFLICT.getHttpStatusCode(), "Book Not Borrowed By Pattron", HttpStatus.CONFLICT);
+        super(HTTPStatusCodesEnum.CONFLICT.getHttpStatusCode(), "Book Not Borrowed By Patron", HttpStatus.CONFLICT);
     }
 
     public BookIsNotBorrowedByPatron(String errorCode, String message, HttpStatus httpStatus) {

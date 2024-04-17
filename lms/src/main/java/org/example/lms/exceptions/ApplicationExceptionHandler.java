@@ -1,27 +1,21 @@
 package org.example.lms.exceptions;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.example.lms.dto.outbound.ApiErrorResponse;
-import org.example.lms.exceptions.ApplicationException;
-import org.example.lms.exceptions.HTTPStatusCodesEnum;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
 @Slf4j
 @RestControllerAdvice
@@ -72,52 +66,29 @@ public class ApplicationExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiErrorResponse> handleValidationErrors(MethodArgumentNotValidException ex, HttpServletRequest request) {
-        List<String> errors = ex.getBindingResult().getFieldErrors()
-                                .stream().map(FieldError::getDefaultMessage).collect(Collectors.toList());
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    public ResponseEntity<?> handleValidationException(HandlerMethodValidationException ex, final HttpServletRequest request) {
         var guid = UUID.randomUUID().toString();
         log.error(
-                String.format("Validation Error GUID=%s; error message: %s", guid, ex.getMessage()),
+                String.format("Error GUID=%s; error message: %s", guid, ex.getMessage()),
                 ex
         );
-        var response = new ApiErrorResponse(
-                guid,
-                HTTPStatusCodesEnum.BAD_REQUEST.getHttpStatusCode(),
-                "Validation error",
+
+        List<List<String>> errors =  ex.getAllValidationResults().stream().map(e -> e.getResolvableErrors().stream().map(MessageSourceResolvable::getDefaultMessage).collect(Collectors.toList())).toList();
+
+        ApiErrorResponse response = new ApiErrorResponse(
+                UUID.randomUUID().toString(),
+                "VALIDATION_FAILURE",
+                "Validation failure",
                 HttpStatus.BAD_REQUEST.value(),
                 HttpStatus.BAD_REQUEST.name(),
                 request.getRequestURI(),
                 request.getMethod(),
                 LocalDateTime.now()
         );
-        response.addError("errors", errors);
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-    }
+        response.addError("errors", errors.get(0));
 
-    @ExceptionHandler(ServletRequestBindingException.class)
-    public ResponseEntity<ApiErrorResponse> handleServletRequestBindingException(ServletRequestBindingException ex, HttpServletRequest request) {
-        var guid = UUID.randomUUID().toString();
-        log.error(
-                String.format("Invalid PathVariable Error GUID=%s; error message: %s", guid, ex.getMessage()),
-                ex
-        );
-        var response = new ApiErrorResponse(
-                guid,
-                HTTPStatusCodesEnum.BAD_REQUEST.getHttpStatusCode(),
-                "Invalid PathVariable",
-                HttpStatus.BAD_REQUEST.value(),
-                HttpStatus.BAD_REQUEST.name(),
-                request.getRequestURI(),
-                request.getMethod(),
-                LocalDateTime.now()
-        );
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-    }
-
-    private Map<String, List<String>> getErrorsMap(List<String> errors) {
-        Map<String, List<String>> errorResponse = new HashMap<>();
-        errorResponse.put("errors", errors);
-        return errorResponse;
     }
 }
+
