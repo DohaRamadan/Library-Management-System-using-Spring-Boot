@@ -20,6 +20,8 @@ import org.example.lms.exceptions.patron.PatronNotFoundException;
 import org.example.lms.models.Patron;
 import org.example.lms.repositories.PatronRepository;
 import org.example.lms.services.PatronService;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -31,6 +33,7 @@ public class PatronServiceImpl implements PatronService {
     }
 
     @Override
+    @Cacheable("patronsCache")
     public PatronsGetResponse getAllPatrons(PatronsGetRequest patronsGetRequest) {
         List<Patron> patrons = patronRepository.findAll();
         if(patrons.isEmpty()){
@@ -40,6 +43,7 @@ public class PatronServiceImpl implements PatronService {
     }
 
     @Override
+    @Cacheable("patronsCache")
     public PatronGetResponse getPatronById(PatronGetRequest patronGetRequest) {
         Optional<Patron> patronOptional = patronRepository.findById(Long.valueOf(patronGetRequest.getPatronId()));
         if(patronOptional.isEmpty()){
@@ -49,6 +53,7 @@ public class PatronServiceImpl implements PatronService {
     }
 
     @Override
+    @CacheEvict("patronsCache")
     public PatronAddResponse addPatron(PatronAddRequest patronAddRequest) {
         Optional<Patron> patronOptional = patronRepository.findByEmail(patronAddRequest.getEmail());
         if(patronOptional.isPresent()){
@@ -60,6 +65,7 @@ public class PatronServiceImpl implements PatronService {
     }
 
     @Override
+    @CacheEvict("patronsCache")
     public PatronUpdateResponse updatePatron(PatronUpdateRequest patronUpdateRequest) {
         Optional<Patron> patronOptional = patronRepository.findByEmail(patronUpdateRequest.getEmail());
         if(patronOptional.isEmpty()){
@@ -75,6 +81,7 @@ public class PatronServiceImpl implements PatronService {
     }
 
     @Override
+    @CacheEvict("patronsCache")
     public PatronDeleteResponse deletePatron(PatronDeleteRequest patronDeleteRequest) {
         Optional<Patron> patronOptional = patronRepository.findById(Long.valueOf(patronDeleteRequest.getPatronId()));
         if(patronOptional.isEmpty()){
