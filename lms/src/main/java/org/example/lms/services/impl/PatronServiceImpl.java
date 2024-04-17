@@ -41,7 +41,7 @@ public class PatronServiceImpl implements PatronService {
 
     @Override
     public PatronGetResponse getPatronById(PatronGetRequest patronGetRequest) {
-        Optional<Patron> patronOptional = patronRepository.findById(patronGetRequest.getPatronId());
+        Optional<Patron> patronOptional = patronRepository.findById(Long.valueOf(patronGetRequest.getPatronId()));
         if(patronOptional.isEmpty()){
             throw new PatronNotFoundException();
         }
@@ -76,11 +76,11 @@ public class PatronServiceImpl implements PatronService {
 
     @Override
     public PatronDeleteResponse deletePatron(PatronDeleteRequest patronDeleteRequest) {
-        Optional<Patron> patronOptional = patronRepository.findById(patronDeleteRequest.getPatronId());
+        Optional<Patron> patronOptional = patronRepository.findById(Long.valueOf(patronDeleteRequest.getPatronId()));
         if(patronOptional.isEmpty()){
             throw new PatronNotFoundException();
         }
-        patronRepository.deleteById(patronDeleteRequest.getPatronId());
+        patronRepository.deleteById(Long.valueOf(patronDeleteRequest.getPatronId()));
         return new PatronDeleteResponse();
     }
 

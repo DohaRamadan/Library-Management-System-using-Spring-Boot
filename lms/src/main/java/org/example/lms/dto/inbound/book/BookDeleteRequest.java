@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.antlr.v4.runtime.misc.NotNull;
+import org.example.lms.validtors.ID;
 import org.springframework.validation.annotation.Validated;
 
 @Validated
@@ -16,7 +17,8 @@ import org.springframework.validation.annotation.Validated;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookDeleteRequest {
+    @ID
     @NotNull
     @JsonProperty("bookId")
-    private Long bookId;
+    private String bookId;
 }

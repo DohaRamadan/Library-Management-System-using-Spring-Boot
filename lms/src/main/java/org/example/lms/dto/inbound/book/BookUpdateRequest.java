@@ -11,6 +11,12 @@ import lombok.Setter;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.example.lms.enums.BookStatusEnum;
 import org.example.lms.models.BorrowingRecord;
+import org.example.lms.validtors.BookName;
+import org.example.lms.validtors.BookStatus;
+import org.example.lms.validtors.ID;
+import org.example.lms.validtors.ISBN;
+import org.example.lms.validtors.Name;
+import org.example.lms.validtors.YearFormat;
 import org.springframework.validation.annotation.Validated;
 
 @Validated
@@ -22,20 +28,30 @@ import org.springframework.validation.annotation.Validated;
 public class BookUpdateRequest {
     @NotNull
     @JsonProperty("id")
-    private Long id;
+    @ID
+    private String id;
     @NotNull
     @JsonProperty("author")
+    @Name
     private String author;
+
     @NotNull
     @JsonProperty("title")
+    @BookName
     private String title;
+
     @NotNull
     @JsonProperty("isbn")
+    @ISBN
     private String isbn;
+
     @NotNull
     @JsonProperty("publicationYear")
+    @YearFormat
     private String publicationYear;
+
     @NotNull
     @JsonProperty("status")
-    private BookStatusEnum status;
+    @BookStatus
+    private String status;
 }

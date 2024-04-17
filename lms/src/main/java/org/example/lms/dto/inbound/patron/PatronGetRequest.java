@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.antlr.v4.runtime.misc.NotNull;
+import org.example.lms.validtors.ID;
 import org.springframework.validation.annotation.Validated;
 
 @Validated
@@ -18,5 +19,6 @@ import org.springframework.validation.annotation.Validated;
 public class PatronGetRequest {
     @NotNull
     @JsonProperty("patronId")
-    private Long patronId;
+    @ID
+    private String patronId;
 }

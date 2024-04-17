@@ -1,5 +1,7 @@
 package org.example.lms.controllers;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.example.lms.dto.inbound.patron.PatronAddRequest;
 import org.example.lms.dto.inbound.patron.PatronDeleteRequest;
 import org.example.lms.dto.inbound.patron.PatronGetRequest;
@@ -11,6 +13,7 @@ import org.example.lms.dto.outbound.patron.PatronGetResponse;
 import org.example.lms.dto.outbound.patron.PatronUpdateResponse;
 import org.example.lms.dto.outbound.patron.PatronsGetResponse;
 import org.example.lms.services.PatronService;
+import org.example.lms.validtors.ID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,25 +34,25 @@ public class PatronController {
     }
 
     @GetMapping("/{patronId}")
-    public ResponseEntity<PatronGetResponse> getPatronById(@PathVariable Long patronId) {
+    public ResponseEntity<PatronGetResponse> getPatronById(@Valid @ID @PathVariable(name = "patronId", required = true) @NotNull String patronId) {
         PatronGetResponse response = patronService.getPatronById(new PatronGetRequest(patronId));
         return ResponseEntity.ok(response);
     }
 
     @PostMapping
-    public ResponseEntity<PatronAddResponse> addPatron(@RequestBody PatronAddRequest patronAddRequest) {
+    public ResponseEntity<PatronAddResponse> addPatron(@Valid @RequestBody @NotNull PatronAddRequest patronAddRequest) {
         PatronAddResponse response = patronService.addPatron(patronAddRequest);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @PutMapping
-    public ResponseEntity<PatronUpdateResponse> updatePatron(@RequestBody PatronUpdateRequest patronUpdateRequest) {
+    public ResponseEntity<PatronUpdateResponse> updatePatron(@Valid @RequestBody @NotNull PatronUpdateRequest patronUpdateRequest) {
         PatronUpdateResponse response = patronService.updatePatron(patronUpdateRequest);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{patronId}")
-    public ResponseEntity<PatronDeleteResponse> deletePatron(@PathVariable Long patronId) {
+    public ResponseEntity<PatronDeleteResponse> deletePatron(@Valid @ID @PathVariable(name = "patronId", required = true) @NotNull String patronId) {
         PatronDeleteResponse response = patronService.deletePatron(new PatronDeleteRequest(patronId));
         return ResponseEntity.ok(response);
     }

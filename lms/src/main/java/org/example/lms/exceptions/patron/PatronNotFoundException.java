@@ -1,11 +1,15 @@
 package org.example.lms.exceptions.patron;
 
-public class PatronNotFoundException extends RuntimeException{
-    public PatronNotFoundException(String message) {
-        super(message);
+import org.example.lms.exceptions.ApplicationException;
+import org.example.lms.exceptions.HTTPStatusCodesEnum;
+import org.springframework.http.HttpStatus;
+
+public class PatronNotFoundException extends ApplicationException {
+    public PatronNotFoundException() {
+        super(HTTPStatusCodesEnum.NOT_FOUND.getHttpStatusCode(), "Patron Not Found", HttpStatus.NOT_FOUND);
     }
 
-    public PatronNotFoundException(){
-        super("Patron Not Found");
+    public PatronNotFoundException(String errorCode, String message, HttpStatus httpStatus) {
+        super(errorCode, message, httpStatus);
     }
 }

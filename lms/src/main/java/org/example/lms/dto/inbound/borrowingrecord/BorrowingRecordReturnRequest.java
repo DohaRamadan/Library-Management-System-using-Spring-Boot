@@ -1,9 +1,12 @@
 package org.example.lms.dto.inbound.borrowingrecord;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import org.antlr.v4.runtime.misc.NotNull;
+import org.example.lms.validtors.ID;
 import org.springframework.validation.annotation.Validated;
 
 @Validated
@@ -12,6 +15,12 @@ import org.springframework.validation.annotation.Validated;
 @Setter
 @AllArgsConstructor
 public class BorrowingRecordReturnRequest {
-    private Long bookId;
-    private Long patronId;
+    @ID
+    @NotNull
+    @JsonProperty("bookId")
+    private String bookId;
+    @ID
+    @NotNull
+    @JsonProperty("patronId")
+    private String patronId;
 }

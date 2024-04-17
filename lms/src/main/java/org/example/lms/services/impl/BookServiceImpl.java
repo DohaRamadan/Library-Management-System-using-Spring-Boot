@@ -14,6 +14,7 @@ import org.example.lms.dto.outbound.book.BookGetResponse;
 import org.example.lms.dto.outbound.book.BookResponse;
 import org.example.lms.dto.outbound.book.BookUpdateResponse;
 import org.example.lms.dto.outbound.book.BooksGetResponse;
+import org.example.lms.enums.BookStatusEnum;
 import org.example.lms.exceptions.book.BookAlreadyExistsException;
 import org.example.lms.exceptions.book.BookNotFoundException;
 import org.example.lms.exceptions.book.NoBooksExistException;
@@ -43,14 +44,14 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public BookUpdateResponse updateBook(BookUpdateRequest bookUpdateRequest) {
-        Optional<Book> bookEntity = bookRepository.findBookById(bookUpdateRequest.getId());
+        Optional<Book> bookEntity = bookRepository.findBookById(Long.valueOf(bookUpdateRequest.getId()));
         if(bookEntity.isEmpty()){
             throw new BookNotFoundException();
         }
         Book book = bookEntity.get();
         book.setPublicationYear(bookUpdateRequest.getPublicationYear());
         book.setAuthor(bookUpdateRequest.getAuthor());
-        book.setStatus(bookUpdateRequest.getStatus());
+        book.setStatus(BookStatusEnum.valueOf(bookUpdateRequest.getStatus()));
         book.setTitle(bookUpdateRequest.getTitle());
         book.setIsbn(bookUpdateRequest.getIsbn());
         bookRepository.save(book);
@@ -59,7 +60,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public BookDeleteResponse deleteBook(BookDeleteRequest bookDeleteRequest) {
-        Long bookId = bookDeleteRequest.getBookId();
+        Long bookId = Long.valueOf(bookDeleteRequest.getBookId());
         if (bookRepository.existsById(bookId)) {
             bookRepository.deleteById(bookId);
         } else {
@@ -79,7 +80,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public BookGetResponse getBookById(BookGetRequest bookGetRequest) throws Exception {
-        Optional<Book> bookEntity = bookRepository.findBookById(bookGetRequest.getBookId());
+        Optional<Book> bookEntity = bookRepository.findBookById(Long.valueOf(bookGetRequest.getBookId()));
         if(bookEntity.isEmpty()){
             throw new BookNotFoundException();
         }
@@ -91,7 +92,7 @@ public class BookServiceImpl implements BookService {
         Book book = new Book();
         book.setAuthor(request.getAuthor());
         book.setIsbn(request.getIsbn());
-        book.setStatus(request.getStatus());
+        book.setStatus(BookStatusEnum.valueOf(request.getStatus()));
         book.setTitle(request.getTitle());
         book.setPublicationYear(request.getPublicationYear());
         return book;

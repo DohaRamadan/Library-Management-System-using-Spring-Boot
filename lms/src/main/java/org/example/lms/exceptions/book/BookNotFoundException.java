@@ -1,10 +1,15 @@
 package org.example.lms.exceptions.book;
 
-public class BookNotFoundException extends RuntimeException {
-    public BookNotFoundException(){
-        super("Book not found");
+import org.example.lms.exceptions.ApplicationException;
+import org.example.lms.exceptions.HTTPStatusCodesEnum;
+import org.springframework.http.HttpStatus;
+
+public class BookNotFoundException extends ApplicationException {
+    public BookNotFoundException() {
+        super(HTTPStatusCodesEnum.NOT_FOUND.getHttpStatusCode(), "Book not found", HttpStatus.NOT_FOUND);
     }
-    public BookNotFoundException(String message) {
-        super(message);
+
+    public BookNotFoundException(String errorCode, String message, HttpStatus httpStatus) {
+        super(errorCode, message, httpStatus);
     }
 }
