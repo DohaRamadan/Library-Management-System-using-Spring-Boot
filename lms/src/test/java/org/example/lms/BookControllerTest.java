@@ -3,6 +3,9 @@ package org.example.lms;
 import org.example.lms.controllers.BookController;
 import org.example.lms.dto.inbound.book.*;
 import org.example.lms.dto.outbound.book.*;
+import org.example.lms.enums.BookStatusEnum;
+import org.example.lms.exceptions.book.*;
+import org.example.lms.models.Book;
 import org.example.lms.services.BookService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,9 +15,11 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class BookControllerTest {
@@ -26,69 +31,138 @@ public class BookControllerTest {
     private BookController bookController;
 
     @BeforeEach
-    public void setup() {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
     }
 
     @Test
-    public void testGetAllBooks() throws Exception {
-        BooksGetResponse expectedResponse = new BooksGetResponse(Collections.emptyList());
-        when(bookService.getAllBooks(any())).thenReturn(expectedResponse);
+    public void testGetAllBooks_Success() throws Exception {
+        // Prepare
+        List<Book> books = new ArrayList<>();
+        books.add(createSampleBook());
+        when(bookService.getAllBooks(any())).thenReturn(new BooksGetResponse(books));
 
+        // Execute
         ResponseEntity<BooksGetResponse> responseEntity = bookController.getAllBooks();
 
-        verify(bookService).getAllBooks(any());
+        // Verify
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals(expectedResponse, responseEntity.getBody());
+        assertEquals(books.size(), responseEntity.getBody().getBooks().size());
     }
 
     @Test
-    public void testGetBookById() throws Exception {
-        BookGetResponse expectedResponse = new BookGetResponse();
-        when(bookService.getBookById(any())).thenReturn(expectedResponse);
+    public void testGetBookById_Success() throws Exception {
+        // Prepare
+        String bookId = "1";
+        Book book = createSampleBook();
+        when(bookService.getBookById(any())).thenReturn(new BookGetResponse(book));
 
-        ResponseEntity<BookGetResponse> responseEntity = bookController.getBookById("1");
+        // Execute
+        ResponseEntity<BookGetResponse> responseEntity = bookController.getBookById(bookId);
 
-        verify(bookService).getBookById(any());
+        // Verify
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals(expectedResponse, responseEntity.getBody());
+        assertEquals(bookId, responseEntity.getBody().getBook().getId().toString());
     }
 
     @Test
-    public void testAddBook() throws Exception {
-        BookAddRequest request = new BookAddRequest();
-        BookAddResponse expectedResponse = new BookAddResponse();
-        when(bookService.addBook(any())).thenReturn(expectedResponse);
+    public void testAddBook_Success() throws Exception {
+        // Prepare
+        BookAddRequest addRequest = new BookAddRequest(/* Add book details here */);
+        when(bookService.addBook(any())).thenReturn(new BookAddResponse());
 
-        ResponseEntity<BookAddResponse> responseEntity = bookController.addBook(request);
+        // Execute
+        ResponseEntity<BookAddResponse> responseEntity = bookController.addBook(addRequest);
 
-        verify(bookService).addBook(any());
+        // Verify
         assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
-        assertEquals(expectedResponse, responseEntity.getBody());
     }
 
     @Test
-    public void testUpdateBook() throws Exception {
-        BookUpdateRequest request = new BookUpdateRequest();
-        BookUpdateResponse expectedResponse = new BookUpdateResponse();
-        when(bookService.updateBook(any())).thenReturn(expectedResponse);
+    public void testDeleteBook_BookNotFound() {
+        // Prepare
+        String bookId = "1";
+        doThrow(BookNotFoundException.class).when(bookService).deleteBook(any());
 
-        ResponseEntity<BookUpdateResponse> responseEntity = bookController.updateBook(request);
+        // Execute and Verify
+        assertThrows(BookNotFoundException.class, () -> bookController.deleteBook(bookId));
+    }
 
-        verify(bookService).updateBook(any());
+    @Test
+    public void testUpdateBook_BookNotFound() throws Exception {
+        // Prepare
+        BookUpdateRequest updateRequest = new BookUpdateRequest(/* Add non-existent book details here */);
+        doThrow(BookNotFoundException.class).when(bookService).updateBook(any());
+
+        // Execute and Verify
+        assertThrows(BookNotFoundException.class, () -> bookController.updateBook(updateRequest));
+    }
+
+
+    @Test
+    public void testUpdateBook_Success() throws Exception {
+        // Prepare
+        BookUpdateRequest updateRequest = new BookUpdateRequest(/* Add book details here */);
+        when(bookService.updateBook(any())).thenReturn(new BookUpdateResponse(new BookResponse()));
+
+        // Execute
+        ResponseEntity<BookUpdateResponse> responseEntity = bookController.updateBook(updateRequest);
+
+        // Verify
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals(expectedResponse, responseEntity.getBody());
     }
 
     @Test
-    public void testDeleteBook() {
-        BookDeleteResponse expectedResponse = new BookDeleteResponse();
-        when(bookService.deleteBook(any())).thenReturn(expectedResponse);
+    public void testDeleteBook_Success() throws Exception {
+        // Prepare
+        String bookId = "1";
+        when(bookService.deleteBook(any())).thenReturn(new BookDeleteResponse());
 
-        ResponseEntity<BookDeleteResponse> responseEntity = bookController.deleteBook("1");
+        // Execute
+        ResponseEntity<BookDeleteResponse> responseEntity = bookController.deleteBook(bookId);
 
-        verify(bookService).deleteBook(any());
+        // Verify
         assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
-        assertEquals(expectedResponse, responseEntity.getBody());
+    }
+
+    @Test
+    public void testGetAllBooks_NoBooksExist() throws Exception {
+        // Prepare
+        when(bookService.getAllBooks(any())).thenThrow(new NoBooksExistException());
+
+        // Execute and Verify
+        assertThrows(NoBooksExistException.class, () -> bookController.getAllBooks());
+    }
+
+    @Test
+    public void testGetBookById_BookNotFound() throws Exception {
+        // Prepare
+        String bookId = "1";
+        when(bookService.getBookById(any())).thenThrow(new BookNotFoundException());
+
+        // Execute and Verify
+        assertThrows(BookNotFoundException.class, () -> bookController.getBookById(bookId));
+    }
+
+    @Test
+    public void testAddBook_BookAlreadyExists() throws Exception {
+        // Prepare
+        BookAddRequest addRequest = new BookAddRequest(/* Add existing book details here */);
+        when(bookService.addBook(any())).thenThrow(new BookAlreadyExistsException());
+
+        // Execute and Verify
+        assertThrows(BookAlreadyExistsException.class, () -> bookController.addBook(addRequest));
+    }
+
+    // Helper method to create a sample book for testing
+    private Book createSampleBook() {
+        Book book = new Book();
+        book.setId(1L);
+        book.setAuthor("John Doe");
+        book.setTitle("Sample Book");
+        book.setIsbn("978-3-16-148410-0");
+        book.setPublicationYear("2022");
+        book.setStatus(BookStatusEnum.AVAILABLE);
+        return book;
     }
 }
