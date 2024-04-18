@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -152,6 +153,31 @@ public class BookControllerTest {
 
         // Execute and Verify
         assertThrows(BookAlreadyExistsException.class, () -> bookController.addBook(addRequest));
+    }
+
+    @Test
+    public void testGetAllBooks_Success_CachingWorks() throws Exception {
+        // Prepare
+        List<Book> books = new ArrayList<>();
+        books.add(createSampleBook());
+
+        // Mock the behavior of the service method
+        when(bookService.getAllBooks(any())).thenReturn(new BooksGetResponse(books));
+
+        // Execute the getAllBooks method twice
+        ResponseEntity<BooksGetResponse> responseEntity1 = bookController.getAllBooks();
+        ResponseEntity<BooksGetResponse> responseEntity2 = bookController.getAllBooks();
+
+        // Verify that the service method is only called once
+        verify(bookService, times(1)).getAllBooks(any());
+
+        // Assert that both responses are successful
+        assertEquals(HttpStatus.OK, responseEntity1.getStatusCode());
+        assertEquals(HttpStatus.OK, responseEntity2.getStatusCode());
+
+        // Assert that the response bodies contain the same books
+        assertEquals(books.size(), Objects.requireNonNull(responseEntity1.getBody()).getBooks().size());
+        assertEquals(books.size(), Objects.requireNonNull(responseEntity2.getBody()).getBooks().size());
     }
 
     // Helper method to create a sample book for testing

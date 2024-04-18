@@ -21,6 +21,8 @@ import org.example.lms.exceptions.book.NoBooksExistException;
 import org.example.lms.models.Book;
 import org.example.lms.repositories.BookRepository;
 import org.example.lms.services.BookService;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -32,6 +34,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @CacheEvict("booksCache")
     public BookAddResponse addBook(BookAddRequest bookAddRequest) {
         Optional<Book> bookEntity = bookRepository.findByIsbn(bookAddRequest.getIsbn());
         if(bookEntity.isPresent()){
@@ -43,6 +46,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @CacheEvict("booksCache")
     public BookUpdateResponse updateBook(BookUpdateRequest bookUpdateRequest) {
         Optional<Book> bookEntity = bookRepository.findBookById(Long.valueOf(bookUpdateRequest.getId()));
         if(bookEntity.isEmpty()){
@@ -59,6 +63,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @CacheEvict("booksCache")
     public BookDeleteResponse deleteBook(BookDeleteRequest bookDeleteRequest) {
         Long bookId = Long.valueOf(bookDeleteRequest.getBookId());
         if (bookRepository.existsById(bookId)) {
@@ -70,6 +75,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Cacheable("booksCache")
     public BooksGetResponse getAllBooks(BooksGetRequest booksGetRequest) throws Exception {
         List<Book> books = bookRepository.findAll();
         if(books.isEmpty()){
@@ -79,6 +85,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Cacheable("booksCache")
     public BookGetResponse getBookById(BookGetRequest bookGetRequest) throws Exception {
         Optional<Book> bookEntity = bookRepository.findBookById(Long.valueOf(bookGetRequest.getBookId()));
         if(bookEntity.isEmpty()){
