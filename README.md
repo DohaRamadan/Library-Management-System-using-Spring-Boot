@@ -16,6 +16,8 @@ To use the API, you need to follow these steps:
 - Spring Boot 3.2.4
 - PostgreSQL
 
+## How to Run
+
 1. **Clone the Repository:** 
    ```
    git clone https://github.com/DohaRamadan/Library-Management-System-using-Spring-Boot.git
