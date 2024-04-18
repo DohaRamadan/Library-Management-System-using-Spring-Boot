@@ -74,8 +74,8 @@ public class PatronServiceImpl implements PatronService {
         Patron patron = patronOptional.get();
         patron.setPhoneNumber(patronUpdateRequest.getPhoneNumber());
         patron.setEmail(patronUpdateRequest.getEmail());
-        patron.setFirstName(patron.getFirstName());
-        patron.setLastName(patron.getLastName());
+        patron.setFirstName(patronUpdateRequest.getFirstName());
+        patron.setLastName(patronUpdateRequest.getLastName());
         patronRepository.save(patron);
         return new PatronUpdateResponse(new PatronResponse(patron));
     }

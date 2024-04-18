@@ -8,9 +8,10 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.antlr.v4.runtime.misc.NotNull;
+import jakarta.validation.constraints.NotNull;
 import org.example.lms.enums.BookStatusEnum;
 import org.example.lms.models.BorrowingRecord;
+import org.example.lms.validtors.AuthorName;
 import org.example.lms.validtors.BookName;
 import org.example.lms.validtors.BookStatus;
 import org.example.lms.validtors.ID;
@@ -32,7 +33,7 @@ public class BookUpdateRequest {
     private String id;
     @NotNull
     @JsonProperty("author")
-    @Name
+    @AuthorName
     private String author;
 
     @NotNull
