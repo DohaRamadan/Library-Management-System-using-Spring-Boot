@@ -86,7 +86,7 @@ public class PatronControllerTest {
     @Test
     public void testUpdatePatron_Success() {
         // Prepare
-        PatronUpdateRequest updateRequest = new PatronUpdateRequest(/* Add patron details here */);
+        PatronUpdateRequest updateRequest = new PatronUpdateRequest();
         when(patronService.updatePatron(any())).thenReturn(new PatronUpdateResponse(new PatronResponse()));
 
         // Execute
@@ -161,7 +161,7 @@ public class PatronControllerTest {
     @Test
     public void testAddPatron_PatronAlreadyExists() {
         // Prepare
-        PatronAddRequest addRequest = new PatronAddRequest(/* Add existing patron details here */);
+        PatronAddRequest addRequest = new PatronAddRequest();
         when(patronService.addPatron(any())).thenThrow(new PatronAlreadyExistsException());
 
         // Execute and Verify

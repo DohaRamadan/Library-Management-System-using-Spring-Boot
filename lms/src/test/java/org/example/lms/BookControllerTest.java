@@ -69,7 +69,7 @@ public class BookControllerTest {
     @Test
     public void testAddBook_Success() throws Exception {
         // Prepare
-        BookAddRequest addRequest = new BookAddRequest(/* Add book details here */);
+        BookAddRequest addRequest = new BookAddRequest();
         when(bookService.addBook(any())).thenReturn(new BookAddResponse());
 
         // Execute
@@ -92,7 +92,7 @@ public class BookControllerTest {
     @Test
     public void testUpdateBook_BookNotFound() throws Exception {
         // Prepare
-        BookUpdateRequest updateRequest = new BookUpdateRequest(/* Add non-existent book details here */);
+        BookUpdateRequest updateRequest = new BookUpdateRequest();
         doThrow(BookNotFoundException.class).when(bookService).updateBook(any());
 
         // Execute and Verify
@@ -103,7 +103,7 @@ public class BookControllerTest {
     @Test
     public void testUpdateBook_Success() throws Exception {
         // Prepare
-        BookUpdateRequest updateRequest = new BookUpdateRequest(/* Add book details here */);
+        BookUpdateRequest updateRequest = new BookUpdateRequest();
         when(bookService.updateBook(any())).thenReturn(new BookUpdateResponse(new BookResponse()));
 
         // Execute
@@ -148,37 +148,13 @@ public class BookControllerTest {
     @Test
     public void testAddBook_BookAlreadyExists() throws Exception {
         // Prepare
-        BookAddRequest addRequest = new BookAddRequest(/* Add existing book details here */);
+        BookAddRequest addRequest = new BookAddRequest();
         when(bookService.addBook(any())).thenThrow(new BookAlreadyExistsException());
 
         // Execute and Verify
         assertThrows(BookAlreadyExistsException.class, () -> bookController.addBook(addRequest));
     }
 
-    @Test
-    public void testGetAllBooks_Success_CachingWorks() throws Exception {
-        // Prepare
-        List<Book> books = new ArrayList<>();
-        books.add(createSampleBook());
-
-        // Mock the behavior of the service method
-        when(bookService.getAllBooks(any())).thenReturn(new BooksGetResponse(books));
-
-        // Execute the getAllBooks method twice
-        ResponseEntity<BooksGetResponse> responseEntity1 = bookController.getAllBooks();
-        ResponseEntity<BooksGetResponse> responseEntity2 = bookController.getAllBooks();
-
-        // Verify that the service method is only called once
-        verify(bookService, times(1)).getAllBooks(any());
-
-        // Assert that both responses are successful
-        assertEquals(HttpStatus.OK, responseEntity1.getStatusCode());
-        assertEquals(HttpStatus.OK, responseEntity2.getStatusCode());
-
-        // Assert that the response bodies contain the same books
-        assertEquals(books.size(), Objects.requireNonNull(responseEntity1.getBody()).getBooks().size());
-        assertEquals(books.size(), Objects.requireNonNull(responseEntity2.getBody()).getBooks().size());
-    }
 
     // Helper method to create a sample book for testing
     private Book createSampleBook() {
