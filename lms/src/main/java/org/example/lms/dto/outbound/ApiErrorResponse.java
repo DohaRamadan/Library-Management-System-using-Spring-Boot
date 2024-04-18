@@ -15,13 +15,6 @@ public class ApiErrorResponse {
     private final String path;
     private final String method;
     private final LocalDateTime timestamp;
-    private HashMap<Object, Object> errors;
+    private List<String> errors;
 
-
-    public void addError(String key, List<String> errorList) {
-        if (this.errors == null) {
-            this.errors = new HashMap<>();
-        }
-        this.errors.put(key, errorList);
-    }
 }

@@ -10,11 +10,11 @@ import jakarta.validation.Payload;
 import jakarta.validation.constraints.Pattern;
 
 @Constraint(validatedBy = {})
-@Pattern(regexp = "^[a-zA-Z0-9\\s]+$", message = "Book name must contain only alphabetic, numeric characters, or spaces")
+@Pattern(regexp = "^[a-zA-Z\\s]+$", message = "Author name must contain only alphabetic characters or spaces")
 @Target({ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface BookName {
-    String message() default "Book name must contain only alphabetic, numeric characters, or spaces";
+public @interface AuthorName {
+    String message() default "Author name must contain only alphabetic characters or spaces";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

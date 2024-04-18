@@ -1,16 +1,13 @@
 package org.example.lms.dto.inbound.book;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.antlr.v4.runtime.misc.NotNull;
-import org.example.lms.enums.BookStatusEnum;
-import org.example.lms.models.BorrowingRecord;
+import org.example.lms.validtors.AuthorName;
 import org.example.lms.validtors.BookName;
 import org.example.lms.validtors.BookStatus;
 import org.example.lms.validtors.ISBN;
@@ -27,7 +24,7 @@ import org.springframework.validation.annotation.Validated;
 public class BookAddRequest {
     @NotNull
     @JsonProperty("author")
-    @Name
+    @AuthorName
     private String author;
 
     @NotNull
