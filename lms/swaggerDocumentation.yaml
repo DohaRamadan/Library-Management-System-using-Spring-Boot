@@ -1,0 +1,279 @@
+openapi: 3.0.0
+info:
+  title: Library Management System API
+  description: API documentation for Library Management System
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+paths:
+  /api/books:
+    get:
+      summary: Get All Books
+      description: Endpoint to retrieve all books
+      responses:
+        '200':
+          description: List of all books
+    post:
+      summary: Add Book
+      description: Endpoint to add a new book
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                author:
+                  type: string
+                isbn:
+                  type: string
+                publicationYear:
+                  type: string
+                status:
+                  type: string
+                  enum: [AVAILABLE, BORROWED, RESERVED]
+      responses:
+        '201':
+          description: Book added successfully
+  /api/books/{bookId}:
+    get:
+      summary: Get Book by ID
+      description: Endpoint to retrieve a book by its ID
+      parameters:
+        - name: bookId
+          in: path
+          description: ID of the book to retrieve
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Book details retrieved successfully
+    put:
+      summary: Update Book
+      description: Endpoint to update a book's information
+      parameters:
+        - name: bookId
+          in: path
+          description: ID of the book to update
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                author:
+                  type: string
+                isbn:
+                  type: string
+                publicationYear:
+                  type: string
+                status:
+                  type: string
+                  enum: [AVAILABLE, BORROWED, RESERVED]
+      responses:
+        '200':
+          description: Book updated successfully
+    delete:
+      summary: Delete Book
+      description: Endpoint to delete a book by its ID
+      parameters:
+        - name: bookId
+          in: path
+          description: ID of the book to delete
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Book deleted successfully
+  /api/patrons:
+    get:
+      summary: Get All Patrons
+      description: Endpoint to retrieve all patrons
+      responses:
+        '200':
+          description: List of all patrons
+    post:
+      summary: Add Patron
+      description: Endpoint to add a new patron
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                phoneNumber:
+                  type: string
+                email:
+                  type: string
+                  format: email
+      responses:
+        '201':
+          description: Patron added successfully
+  /api/patrons/{patronId}:
+    get:
+      summary: Get Patron By ID
+      description: Endpoint to retrieve a patron by their ID
+      parameters:
+        - name: patronId
+          in: path
+          description: ID of the patron to retrieve
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Patron details retrieved successfully
+    put:
+      summary: Update Patron
+      description: Endpoint to update a patron's information
+      parameters:
+        - name: patronId
+          in: path
+          description: ID of the patron to update
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                phoneNumber:
+                  type: string
+                email:
+                  type: string
+                  format: email
+      responses:
+        '200':
+          description: Patron updated successfully
+    delete:
+      summary: Delete Patron
+      description: Endpoint to delete a patron by their ID
+      parameters:
+        - name: patronId
+          in: path
+          description: ID of the patron to delete
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Patron deleted successfully
+  /api/borrow/{bookId}/patron/{patronId}:
+    post:
+      summary: Borrow Book
+      description: Endpoint to borrow a book
+      parameters:
+        - name: bookId
+          in: path
+          description: ID of the book to borrow
+          required: true
+          schema:
+            type: integer
+        - name: patronId
+          in: path
+          description: ID of the patron borrowing the book
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Book borrowed successfully
+  /api/borrow/{bookId}/patron/{patronId}/return:
+    put:
+      summary: Return Book
+      description: Endpoint to return a borrowed book
+      parameters:
+        - name: bookId
+          in: path
+          description: ID of the book to return
+          required: true
+          schema:
+            type: integer
+        - name: patronId
+          in: path
+          description: ID of the patron returning the book
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Book returned successfully
+  /auth/signup:
+    post:
+      summary: Sign Up
+      description: Endpoint for user registration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                phoneNumber:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: User registered successfully
+  /auth/login:
+    post:
+      summary: Login
+      description: Endpoint for user login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        '200':
+          description: User logged in successfully
+  /auth/signout:
+    post:
+      summary: Sign Out
+      description: Endpoint for user sign out
+      responses:
+        '200':
+          description: User signed out successfully
