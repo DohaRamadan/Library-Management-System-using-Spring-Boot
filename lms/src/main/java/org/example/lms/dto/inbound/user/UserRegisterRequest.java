@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.example.lms.validtors.Email;
 import org.example.lms.validtors.Name;
+import org.example.lms.validtors.Password;
 import org.example.lms.validtors.PhoneNumber;
 import org.springframework.validation.annotation.Validated;
 
@@ -41,6 +42,6 @@ public class UserRegisterRequest {
 
     @NotNull
     @JsonProperty("password")
-    // TODO
+    @Password
     private String password;
 }
